@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+
+
+  iptv:
+    image: <CONTAINER_NAME>:latest
+    container_name: iptv
+    ports:
+      - "80:80"
+    volumes:
+      - /host/dir/to/episode/lists:/opt/HLS_XMLTV/concat_lists
+      - /host/dir/to/docker_example_config.cfg:/opt/HLS_XMLTV/config.cfg
+      - "/host/dir/to/media:/media"

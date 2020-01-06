@@ -54,6 +54,29 @@ If yours don't,
 
 ### This Is Alpha Software so expect occational bugs
 
+
+### DOCKER-WIP
+#### Issues
+* ngnix isn't configured correctly for XMLTV yet
+* Don't have instructions on optimizing TMPFS in the NGINX web directory yet
+* Container runs as root :(
+
+
+#### Working
+ * Streams start and have confirmed with 1 channel through VLC
+
+
+To test, clone repo then:
+
+$ docker build -t <CONTAINER_NAME>
+
+Then edit docker-compose.yml and docker_example_config.cfg 
+
+To bring up:
+
+$ docker-compose up -d
+
+
 ## For the Curious this is what it looks like when setup on TiviMate
 [![HLS / XMLTV Home broadcasting](https://img.youtube.com/vi/_mWtT-z2smU/0.jpg)](https://www.youtube.com/watch?v=_mWtT-z2smU)
 
