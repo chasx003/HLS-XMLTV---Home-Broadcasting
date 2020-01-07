@@ -119,7 +119,7 @@ RUN cd /tmp/ && \
   wget https://github.com/deanochips/HLS-XMLTV---Home-Broadcasting/archive/master.tar.gz && \
   tar zxf master.tar.gz
 
-RUN mv /tmp/hls-xmltv---home-broadcasting /HLS_XMLTV
+RUN mv /tmp/HLS-XMLTV---Home-Broadcasting-master /HLS_XMLTV
 
 # Cleanup.
 RUN rm -rf /var/cache/* /tmp/*
@@ -157,10 +157,11 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY mime.types /etc/nginx/mime.types
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
-RUN mkdir -p /opt/data && mkdir -p /var/www/html/streams
+RUN mkdir -p /opt/data && mkdir -p /var/www/html/streams && mkdir -p /var/www/html/xmltv
 
 
 ENV HOME_DIR=/opt/HLS_XMLTV    \
+    PYTHON=python3 \
     CACHE_DIR=/opt/HLS_XMLTV/cache    \
     CONCAT_LIST_DIR=/opt/HLS_XMLTV/concat_lists  \
     PLUGIN_DIR=/opt/HLS_XMLTV/plugins \ 
@@ -170,17 +171,32 @@ ENV HOME_DIR=/opt/HLS_XMLTV    \
     M3U_DIR=/var/www/html \
     PID_DIR=/tmp/hxhb/pid \
     TMP_TVLISTS_DIR=/tmp/hxhb/tv_lists \
-    FFMPEG_LOG_DIR=/thmp/hxhb/logs/ffmpeg 
+    FFMPEG_LOG_DIR=/tmp/hxhb/logs/ffmpeg  \
+    EPG_LOG_DIR=/tmp/hxhb/logs/epg \
+    CACHE_SPLITTER_LOG_DIR=/tmp/hxhb/logs/cache_splitter \
+    CLEAN_STREAM_DIR=OFF \
+    STREAM_CLEANUP_TIME=5 \
+    XMLTV_HTTP_DIR=http://192.168.1.214/xmltv \
+    STREAM_HTTP_DIR=http://192.168.1.214/streams \
+    M3U_HTTP_DIR=http://192.168.1.214 \
+    FFMPEG_BIN_LOCATION=/usr/local/bin/ffmpeg \
+    FFPROBE_BIN_LOCATION=/usr/local/bin/ffprobe \
+    HLS_TIME=10 \
+    HLS_LIST_SIZE=6
+
 
 RUN chmod +x /opt/HLS_XMLTV/cron.sh && \
     chmod +x /opt/HLS_XMLTV/clear_cache.sh && \
     chmod +x /opt/HLS_XMLTV/generate_epg.sh && \
     chmod +x /opt/HLS_XMLTV/kill_stream.sh && \
+    chmod +x /opt/HLS_XMLTV/plugins/randomize.sh && \
+    chmod +x /opt/HLS_XMLTV/plugins/randomize_idents_only.sh && \
+    chmod +x /opt/HLS_XMLTV/plugins/split_finished_cache_file.sh && \
+    chmod +x /opt/HLS_XMLTV/plugins/xmltv-join && \
     chmod +x /opt/HLS_XMLTV/stream_laucher.sh
-    
-
+	
 #  TO-DO Look into running as non root user
-
+    
 #RUN set -x ; \
 #    addgroup -g 82 -S www-data ; \
 #    adduser -u 82 -D -S -G www-data www-data && exit 0 ; exit 1
@@ -196,7 +212,10 @@ RUN chmod +x /opt/HLS_XMLTV/cron.sh && \
 EXPOSE 1935
 EXPOSE 80
 
-VOLUME /opt/HLS_XMLTV/concat_lists
+VOLUME /opt/HLS_XMLTV/
+
+
+
 
 ENTRYPOINT ["/bin/bash", "-c", "/run.sh"]
 
